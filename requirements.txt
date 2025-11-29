@@ -1,3 +1,6 @@
 asgiref==3.11.0
 Django==5.2.8
+django-health-check==3.20.0
+psycopg2-binary==2.9.11
 sqlparse==0.5.4
+typing_extensions==4.15.0

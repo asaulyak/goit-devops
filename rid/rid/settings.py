@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,9 +74,13 @@ WSGI_APPLICATION = 'rid.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "mydb"),
+        "USER": os.getenv("DB_USER", "myuser"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "mypassword"),
+        "HOST": os.getenv("DB_HOST", "localhost"),  # in Docker: name of DB service
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
