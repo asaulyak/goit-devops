@@ -1,0 +1,50 @@
+# Django Application Configuration
+image:
+  repository: ""  # Will be set from ECR repository URL
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Deployment Configuration
+deployment:
+  replicas: 2
+  name: django-app
+
+# Service Configuration
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+  name: django-app-service
+
+# HPA Configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+# ConfigMap - Environment Variables
+configMap:
+  # Database Configuration
+  # TODO: Set this when AWS DB is set up
+  DB_HOST: "localhost"
+  DB_NAME: "mydb"
+  DB_USER: "myuser"
+  DB_PASSWORD: "mypassword"
+  DB_PORT: "5432"
+
+# Resource Limits
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# Labels
+labels:
+  app: django-app
+  version: v1
+

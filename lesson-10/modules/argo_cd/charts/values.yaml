@@ -1,0 +1,9 @@
+# Argo CD Applications configuration
+# Applications will be set via Helm --set flags from Terraform
+applications: []
+
+# Namespace for Argo CD (will be set from Terraform)
+namespace: "argocd"
+
+# Git repositories configuration
+repositories: []
