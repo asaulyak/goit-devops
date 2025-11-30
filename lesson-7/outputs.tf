@@ -47,6 +47,7 @@ output "ecr_repository_arn" {
 }
 
 # Виведення інформації про EKS
+# Використовуємо значення з модуля напряму, а не з data source
 output "eks_cluster_name" {
   description = "EKS cluster name"
   value       = module.eks.cluster_name
@@ -61,6 +62,14 @@ output "eks_cluster_arn" {
   description = "EKS cluster ARN"
   value       = module.eks.cluster_arn
 }
+
+# Додаткові outputs з data source (будуть доступні після створення кластера)
+# Розкоментуйте після створення кластера та розкоментування data sources
+# output "eks_cluster_endpoint_from_data" {
+#   description = "EKS cluster endpoint from data source"
+#   value       = try(data.aws_eks_cluster.cluster.endpoint, "Cluster not created yet")
+#   sensitive   = false
+# }
 
 output "kubectl_config_command" {
   description = "Command to configure kubectl"

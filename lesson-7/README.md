@@ -90,7 +90,7 @@ terraform apply
 terraform output kubectl_config_command
 
 # Або виконайте вручну (замініть на ваші значення)
-aws eks update-kubeconfig --region us-west-2 --name lesson-7-eks
+aws eks update-kubeconfig --region us-east-2 --name lesson-7-eks
 
 # Перевірте підключення
 kubectl get nodes
@@ -110,7 +110,7 @@ kubectl get nodes
 ```bash
 # Отримайте URL ECR репозиторію
 ECR_URL=$(terraform output -raw ecr_repository_url)
-AWS_REGION=$(terraform output -raw aws_region || echo "us-west-2")
+AWS_REGION=$(terraform output -raw aws_region || echo "us-east-2")
 
 # Авторизуйтеся в ECR
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
@@ -241,7 +241,7 @@ terraform destroy
 
 Основні змінні проєкту (можна перевизначити через `terraform.tfvars`):
 
-- `aws_region` - AWS регіон (за замовчуванням: `us-west-2`)
+- `aws_region` - AWS регіон (за замовчуванням: `us-east-2`)
 - `cluster_name` - Ім'я EKS кластера (за замовчуванням: `lesson-7-eks`)
 - `cluster_version` - Версія Kubernetes (за замовчуванням: `1.28`)
 - `node_group_instance_types` - Типи інстансів для node group (за замовчуванням: `["t3.medium"]`)
