@@ -1,0 +1,45 @@
+global:
+  image:
+    tag: "v2.10.0"
+
+server:
+  service:
+    type: LoadBalancer
+    port: 80
+  ingress:
+    enabled: false
+  extraArgs:
+    - --insecure
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+controller:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+repoServer:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+applicationSet:
+  enabled: true
+
+configs:
+  params:
+    server.insecure: true
+

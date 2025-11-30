@@ -1,0 +1,133 @@
+controller:
+  componentName: "jenkins-controller"
+  image: "jenkins/jenkins"
+  tag: "lts"
+  imagePullPolicy: "IfNotPresent"
+  
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+
+  serviceType: "LoadBalancer"
+  servicePort: 80
+  targetPort: 8080
+
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - docker-workflow:latest
+    - pipeline-stage-view:latest
+    - blueocean:latest
+    - credentials-binding:latest
+    - aws-credentials:latest
+    - ecr:latest
+
+  # Kubernetes Cloud Configuration
+  JCasC:
+    defaultConfig: true
+    configScripts:
+      kubernetes-cloud: |
+        jenkins:
+          clouds:
+            - kubernetes:
+                name: "kubernetes"
+                serverUrl: ""
+                namespace: "jenkins"
+                jenkinsUrl: "http://jenkins:8080"
+                jenkinsTunnel: "jenkins-agent:50000"
+                containerCap: 10
+                maxRequestsPerHost: 32
+                retentionTimeout: 5
+                connectTimeout: 10
+                readTimeout: 10
+                templates:
+                  - name: "kaniko"
+                    label: "kaniko"
+                    nodeUsageMode: NORMAL
+                    containers:
+                      - name: "kaniko"
+                        image: "gcr.io/kaniko-project/executor:latest"
+                        command: "/busybox/sh"
+                        args: "-c"
+                        ttyEnabled: true
+                        resourceRequestCpu: "500m"
+                        resourceRequestMemory: "1Gi"
+                        resourceLimitCpu: "1000m"
+                        resourceLimitMemory: "2Gi"
+                        envVars:
+                          - envVar:
+                              key: "AWS_REGION"
+                              value: "us-east-2"
+                          - envVar:
+                              key: "AWS_DEFAULT_REGION"
+                              value: "us-east-2"
+                    volumes:
+                      - emptyDirVolume:
+                          mountPath: "/workspace"
+                    yaml: |
+                      apiVersion: v1
+                      kind: Pod
+                      spec:
+                        serviceAccountName: jenkins-kaniko
+                        containers:
+                        - name: kaniko
+                          volumeMounts:
+                          - name: docker-config
+                            mountPath: /kaniko/.docker
+                        volumes:
+                        - name: docker-config
+                          configMap:
+                            name: docker-config
+
+  # Environment variables for ECR access
+  env:
+    - name: "AWS_REGION"
+      value: "us-east-2"
+    - name: "AWS_DEFAULT_REGION"
+      value: "us-east-2"
+
+agent:
+  enabled: true
+  defaultsProviderTemplate: "default"
+  
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+persistence:
+  enabled: true
+  storageClass: "gp3"
+  size: "20Gi"
+
+serviceAccount:
+  create: true
+  name: "jenkins"
+
+serviceAccountAgent:
+  create: true
+  name: "jenkins-agent"
+
+# Additional Service Account for Kaniko with ECR permissions
+# Note: IAM role annotation should be configured separately
+additionalServiceAccounts:
+  - name: "jenkins-kaniko"
+    annotations: {}
+    labels: {}
+
+# Network Policy
+networkPolicy:
+  enabled: false
+
+# Ingress (optional)
+ingress:
+  enabled: false
+
